@@ -1,9 +1,7 @@
 /* eslint-disable consistent-return */
 const express = require('express');
 const schema = require('../db/schema');
-const db = require('../db/connection');
-
-const employees = db.get('employees');
+const employees = require('../db/employeesStore');
 
 const router = express.Router();
 
@@ -11,7 +9,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    const allEmployees = await employees.find({});
+    const allEmployees = await employees.list();
     res.json(allEmployees);
   } catch (error) {
     next(error);
@@ -22,11 +20,10 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
-    const employee = await employees.findOne({
-      _id: id,
-    });
+    const employee = await employees.getById(id);
 
     if (!employee) {
+      res.status(404);
       const error = new Error('Employee does not exist');
       return next(error);
     }
@@ -43,9 +40,7 @@ router.post('/', async (req, res, next) => {
     const { name, job } = req.body;
     await schema.validateAsync({ name, job });
 
-    const employee = await employees.findOne({
-      name,
-    });
+    const employee = await employees.getByName(name);
 
     // Employee already exists
     if (employee) {
@@ -54,7 +49,7 @@ router.post('/', async (req, res, next) => {
       return next(error);
     }
 
-    const newuser = await employees.insert({
+    const newuser = await employees.create({
       name,
       job,
     });
@@ -71,20 +66,16 @@ router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
     const { name, job } = req.body;
     const result = await schema.validateAsync({ name, job });
-    const employee = await employees.findOne({
-      _id: id,
-    });
+    const employee = await employees.getById(id);
 
     // Employee does not exist
     if (!employee) {
-      return next();
+      res.status(404);
+      const error = new Error('Employee does not exist');
+      return next(error);
     }
 
-    const updatedEmployee = await employees.update({
-      _id: id,
-    }, { $set: result },
-    { upsert: true });
-
+    const updatedEmployee = await employees.update(id, result);
     res.json(updatedEmployee);
   } catch (error) {
     next(error);
@@ -92,20 +83,19 @@ router.put('/:id', async (req, res, next) => {
 });
 
 /* Delete a specific employee */
+// /655afa8196943302b03283bd
 router.delete('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
-    const employee = await employees.findOne({
-      _id: id,
-    });
+    const employee = await employees.getById(id);
 
     // Employee does not exist
     if (!employee) {
-      return next();
+      res.status(404);
+      const error = new Error('Employee does not exist');
+      return next(error);
     }
-    await employees.remove({
-      _id: id,
-    });
+    await employees.remove(id);
 
     res.json({
       message: 'Employee has been deleted',

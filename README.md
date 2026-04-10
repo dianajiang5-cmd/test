@@ -1,55 +1,68 @@
 # express api
 
-A simple REST API in Node.js
-
-API Endpoints
-
-| Methods     | Urls             |Description            |
-| ----------- | -----------      | -----------        |
-| GET         | api/employees    |Get all employees           |
-| GET         | api/employees/id |Get a specific employee         |
-| POST        | api/employees    |Create a new employee         |
-| PUT        | api/employees/id    |Update an existing employee|
-| DELETE        | api/employees/id    |Delete an existing employee|
+A simple REST API in Node.js.
 
 ## Quick Start
 
-Clone the repo.
-
-```bash
-https://github.com/zagaris/express-api.git
-cd express-api
-```
-Create the .env.dev file.
-
-```bash
-DB_URL = localhost/my-employees
-PORT = 5000
-```
-Create the .env.prod file.
-
-```bash
-DB_URL = myhost.me/my-employees
-PORT = 8080
-```
-
-Install the dependencies.
+Install dependencies:
 
 ```bash
 npm install
 ```
-To start the express server in dev mode, run the following.
+
+Start server in dev mode:
 
 ```bash
 npm run dev
 ```
 
-To start the express server in prod mode, run the following.
+Default URL:
 
-```bash
-npm run prod
+```text
+http://localhost:8080
 ```
 
-For more details check [Build a Restful CRUD API with Node.js](https://dev.to/zagaris/build-a-restful-crud-api-with-node-js-2334).
+## Endpoint Table (for task delivery)
+
+Base path: `/api/employees`
+
+| Method | URL | Parameters | Request Body Format | Response Format | Error Codes |
+|---|---|---|---|---|---|
+| GET | `/api/employees` | None | None | `200` + JSON array of employee objects: `[{"_id","name","job"}]` | `500` server error |
+| GET | `/api/employees/:id` | `path`: `id` (employee id) | None | `200` + JSON object: `{"_id","name","job"}` | `404` employee not found, `500` server error |
+| POST | `/api/employees` | None | JSON object: `{"name":"string(3-30)","job":"string(3-30)"}` | `201` + created JSON object: `{"_id","name","job"}` | `409` duplicate name, `500` validation/server error |
+| PUT | `/api/employees/:id` | `path`: `id` (employee id) | JSON object: `{"name":"string(3-30)","job":"string(3-30)"}` | `200` + updated JSON object: `{"_id","name","job"}` | `404` employee not found, `500` validation/server error |
+| DELETE | `/api/employees/:id` | `path`: `id` (employee id) | None | `200` + JSON message: `{"message":"Employee has been deleted"}` | `404` employee not found, `500` server error |
+
+## Local Data
+
+This project now uses a simple local JSON file for demo/testing:
+
+`data/employees.json`
+
+So you can run the API directly without external MongoDB.
+
+## Apidog Test Requests
+
+After starting the server, create these requests in Apidog:
+
+1. Get all employees  
+   - `GET http://localhost:8080/api/employees`
+
+2. Get one employee by id  
+   - `GET http://localhost:8080/api/employees/{{employeeId}}`
+
+3. Create one employee  
+   - `POST http://localhost:8080/api/employees`  
+   - Body (JSON):
+   ```json
+   {
+     "name": "Cathy Wu",
+     "job": "Backend Engineer"
+   }
+   ```
+
+4. Delete the created employee  
+   - `DELETE http://localhost:8080/api/employees/{{employeeId}}`
 
 

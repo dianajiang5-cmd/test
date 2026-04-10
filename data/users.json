@@ -1,0 +1,26 @@
+[
+  {
+    "_id": 1,
+    "username": "alice",
+    "name": "Alice Zhang",
+    "job": "Frontend Engineer"
+  },
+  {
+    "_id": 2,
+    "username": "bob",
+    "name": "Bob Chen",
+    "job": "QA Engineer"
+  },
+  {
+    "_id": 3,
+    "username": "charlie",
+    "name": "Charlie Wang",
+    "job": "Backend Engineer"
+  },
+  {
+    "_id": 4,
+    "username": "diana",
+    "name": "Diana Jiang",
+    "job": "Software Engineer"
+  }
+]

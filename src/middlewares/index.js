@@ -4,6 +4,11 @@ function notFound(req, res, next) {
   next(error);
 }
 
+function requestArrivalTime(req, res, next) {
+  res.setHeader('X-Request-Received-At', new Date().toISOString());
+  next();
+}
+
 function errorHandler(err, req, res, next) {
   res.status(res.statusCode || 500);
   res.json({
@@ -13,6 +18,7 @@ function errorHandler(err, req, res, next) {
 }
 
 module.exports = {
+  requestArrivalTime,
   notFound,
   errorHandler,
 };
